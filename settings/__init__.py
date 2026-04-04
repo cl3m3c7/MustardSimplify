@@ -1,5 +1,4 @@
-from . import settings_main
-from . import settings_addon
+from . import settings_addon, settings_main
 
 
 def register():
