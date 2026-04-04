@@ -1,5 +1,6 @@
 import bpy
-from bpy.props import *
+from bpy.props import BoolProperty, CollectionProperty, PointerProperty, StringProperty
+
 from .. import __package__ as base_package
 
 
@@ -16,6 +17,7 @@ class MustardSimplify_SetObjects(bpy.types.PropertyGroup):
 
 class MUSTARDSIMPLIFY_OT_MenuObjectSelect(bpy.types.Operator):
     """Select the Objects affected by the simplification process"""
+
     bl_idname = "mustard_simplify.menu_objects_select"
     bl_label = "Select Objects to Simplify"
 
@@ -26,7 +28,7 @@ class MUSTARDSIMPLIFY_OT_MenuObjectSelect(bpy.types.Operator):
         return not settings.simplify_status
 
     def execute(self, context):
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def invoke(self, context, event):
 
@@ -48,16 +50,14 @@ class MUSTARDSIMPLIFY_OT_MenuObjectSelect(bpy.types.Operator):
 
         # Extract type of Objects
         rna = bpy.ops.object.add.get_rna_type()
-        objs_list = rna.bl_rna.properties['type'].enum_items.keys()
+        objs_list = rna.bl_rna.properties["type"].enum_items.keys()
 
         # Make the list
         # This is done at run-time, so it should be version agnostic
         if len(objs_list) != len(objects):
-
             objects.clear()
 
             for m in objs_list:
-
                 # Change the displayed name
                 disp_name = m.replace("_", " ")
                 disp_name = disp_name.title()
@@ -101,11 +101,11 @@ class MUSTARDSIMPLIFY_OT_MenuObjectSelect(bpy.types.Operator):
             if m.name == "GREASEPENCIL":
                 col = row.column()
             row2 = col.row()
-            row2.prop(m, 'simplify', text="")
+            row2.prop(m, "simplify", text="")
             # Avoid missing icon error
             try:
                 row2.label(text=m.disp_name, icon=m.icon)
-            except:
+            except Exception:
                 row2.label(text=m.disp_name, icon="BLANK1")
 
 
@@ -113,7 +113,9 @@ def register():
     bpy.utils.register_class(MustardSimplify_SetObject)
 
     bpy.utils.register_class(MustardSimplify_SetObjects)
-    bpy.types.Scene.MustardSimplify_SetObjects = PointerProperty(type=MustardSimplify_SetObjects)
+    bpy.types.Scene.MustardSimplify_SetObjects = PointerProperty(
+        type=MustardSimplify_SetObjects
+    )
 
     bpy.utils.register_class(MUSTARDSIMPLIFY_OT_MenuObjectSelect)
 

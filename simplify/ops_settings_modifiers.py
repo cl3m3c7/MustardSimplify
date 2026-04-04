@@ -1,8 +1,15 @@
 import bpy
-from bpy.props import *
-from .. import utils
-from ..utils.execution_time import update_all_execution_time
+from bpy.props import (
+    BoolProperty,
+    CollectionProperty,
+    EnumProperty,
+    FloatProperty,
+    PointerProperty,
+    StringProperty,
+)
+
 from .. import __package__ as base_package
+from ..utils.execution_time import update_all_execution_time
 
 
 class MustardSimplify_SetModifier(bpy.types.PropertyGroup):
@@ -40,19 +47,16 @@ def define_modifiers(scene):
 
     # Extract type of modifiers for Objects
     rna = bpy.ops.object.modifier_add.get_rna_type()
-    mods_list = rna.bl_rna.properties['type'].enum_items.keys()
+    mods_list = rna.bl_rna.properties["type"].enum_items.keys()
 
     # Make the list
     # This is done at run-time, so it should be version agnostic
     if len(mods_list) != len(modifiers):
-
         modifiers.clear()
 
         for m in mods_list:
-
             # Standard modifiers
-            if not "GREASE_PENCIL_" in m and not "LINEART" in m:
-
+            if "GREASE_PENCIL_" not in m and "LINEART" not in m:
                 # Change the displayed name
                 disp_name = m.replace("_", " ")
                 disp_name = disp_name.title()
@@ -62,8 +66,14 @@ def define_modifiers(scene):
                 simplify = True
 
                 # Manage single exceptions
-                if m in ["MESH_CACHE", "MESH_SEQUENCE_CACHE", "LAPLACIANDEFORM", "MESH_DEFORM", "SURFACE_DEFORM",
-                         "SURFACE"]:
+                if m in [
+                    "MESH_CACHE",
+                    "MESH_SEQUENCE_CACHE",
+                    "LAPLACIANDEFORM",
+                    "MESH_DEFORM",
+                    "SURFACE_DEFORM",
+                    "SURFACE",
+                ]:
                     icon = "MOD_MESHDEFORM"
                 if m in ["LAPLACIANDEFORM"]:
                     icon = "MOD_MESHDEFORM"
@@ -72,23 +82,27 @@ def define_modifiers(scene):
                     icon = "MOD_NORMALEDIT"
                 elif m in ["UV_PROJECT", "UV_WARP"]:
                     icon = "MOD_UVPROJECT"
-                elif m in ['VERTEX_WEIGHT_EDIT', 'VERTEX_WEIGHT_MIX', 'VERTEX_WEIGHT_PROXIMITY']:
+                elif m in [
+                    "VERTEX_WEIGHT_EDIT",
+                    "VERTEX_WEIGHT_MIX",
+                    "VERTEX_WEIGHT_PROXIMITY",
+                ]:
                     icon = "MOD_VERTEX_WEIGHT"
-                elif m in ['DECIMATE']:
+                elif m in ["DECIMATE"]:
                     icon = "MOD_DECIM"
-                elif m in ['EDGE_SPLIT']:
+                elif m in ["EDGE_SPLIT"]:
                     icon = "MOD_EDGESPLIT"
-                elif m in ['NODES']:
+                elif m in ["NODES"]:
                     icon = "GEOMETRY_NODES"
-                elif m in ['MULTIRES']:
+                elif m in ["MULTIRES"]:
                     icon = "MOD_MULTIRES"
                 elif m in ["MESH_TO_VOLUME", "VOLUME_TO_MESH", "VOLUME_DISPLACE"]:
                     icon = "VOLUME_DATA"
                 elif m in ["WELD"]:
                     icon = "AUTOMERGE_OFF"
-                elif m in ['SIMPLE_DEFORM']:
+                elif m in ["SIMPLE_DEFORM"]:
                     icon = "MOD_SIMPLEDEFORM"
-                elif m in ['SMOOTH', 'CORRECTIVE_SMOOTH']:
+                elif m in ["SMOOTH", "CORRECTIVE_SMOOTH"]:
                     icon = "MOD_SMOOTH"
                 if m in ["LAPLACIANSMOOTH"]:
                     icon = "MOD_SMOOTH"
@@ -113,7 +127,6 @@ def define_modifiers(scene):
 
             # Grease Pencil modifiers
             else:
-
                 # Change the displayed name
                 disp_name = m[14:].replace("_", " ")
                 if "LINEART" in m:
@@ -129,7 +142,10 @@ def define_modifiers(scene):
                 # Manage single exceptions
                 if m in ["GREASE_PENCIL_TEXTURE"]:
                     icon = "TEXTURE"
-                elif m in ['GREASE_PENCIL_VERTEX_WEIGHT_ANGLE', 'GREASE_PENCIL_VERTEX_WEIGHT_PROXIMITY']:
+                elif m in [
+                    "GREASE_PENCIL_VERTEX_WEIGHT_ANGLE",
+                    "GREASE_PENCIL_VERTEX_WEIGHT_PROXIMITY",
+                ]:
                     icon = "MOD_VERTEX_WEIGHT"
                 elif m in ["GREASE_PENCIL_MULTIPLY"]:
                     icon = "GP_MULTIFRAME_EDITING"
@@ -153,11 +169,22 @@ def define_modifiers(scene):
 
 class MUSTARDSIMPLIFY_OT_MenuModifiersSelect(bpy.types.Operator):
     """Select the modifiers affected by the simplification process"""
+
     bl_idname = "mustard_simplify.menu_modifiers_select"
     bl_label = "Select Modifiers to Simplify"
 
-    type: EnumProperty(items=[("OBJECT", "Objects", "Object", "MESH_DATA", 0),
-                              ("GPENCIL", "Grease Pencil", "Grease Pencil", "OUTLINER_DATA_GREASEPENCIL", 1)])
+    type: EnumProperty(
+        items=[
+            ("OBJECT", "Objects", "Object", "MESH_DATA", 0),
+            (
+                "GPENCIL",
+                "Grease Pencil",
+                "Grease Pencil",
+                "OUTLINER_DATA_GREASEPENCIL",
+                1,
+            ),
+        ]
+    )
 
     @classmethod
     def poll(cls, context):
@@ -166,7 +193,7 @@ class MUSTARDSIMPLIFY_OT_MenuModifiersSelect(bpy.types.Operator):
         return not settings.simplify_status
 
     def execute(self, context):
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def invoke(self, context, event):
 
@@ -177,7 +204,9 @@ class MUSTARDSIMPLIFY_OT_MenuModifiersSelect(bpy.types.Operator):
 
         update_all_execution_time()
 
-        return context.window_manager.invoke_props_dialog(self, width=1024 if addon_prefs.debug else 900)
+        return context.window_manager.invoke_props_dialog(
+            self, width=1024 if addon_prefs.debug else 900
+        )
 
     def draw(self, context):
 
@@ -195,55 +224,86 @@ class MUSTARDSIMPLIFY_OT_MenuModifiersSelect(bpy.types.Operator):
         col = row.column()
 
         if self.type == "OBJECT":
-
             for m in [x for x in modifiers if x.type == "OBJECT"]:
                 if m.name in ["ARRAY", "ARMATURE", "CLOTH"]:
                     col = row.column()
                 row2 = col.row()
-                row2.prop(m, 'simplify', text="")
+                row2.prop(m, "simplify", text="")
                 # Avoid missing icon error
                 try:
                     row2.label(text=m.disp_name, icon=m.icon)
                     row2.scale_x = 0.2
                     row2.alert = m.time > 0.1
                     if addon_prefs.debug:
-                        row2.label(text=str(int(m.time*1000)) + " ms" if m.execution_time else "")
+                        row2.label(
+                            text=str(int(m.time * 1000)) + " ms"
+                            if m.execution_time
+                            else ""
+                        )
                     row2.scale_x = 1
-                    row2.prop(m, 'execution_time', text="", icon="TIME" if m.execution_time else "MOD_TIME")
-                except:
+                    row2.prop(
+                        m,
+                        "execution_time",
+                        text="",
+                        icon="TIME" if m.execution_time else "MOD_TIME",
+                    )
+                except Exception:
                     row2.label(text=m.disp_name, icon="BLANK1")
 
         if self.type == "GPENCIL":
-
             mods = [x for x in modifiers if x.type == "GPENCIL"]
 
             order = [
                 # Edit
-                'GREASE_PENCIL_TEXTURE', 'GREASE_PENCIL_TIME', 'GREASE_PENCIL_VERTEX_WEIGHT_PROXIMITY',
-                'GREASE_PENCIL_VERTEX_WEIGHT_ANGLE',
+                "GREASE_PENCIL_TEXTURE",
+                "GREASE_PENCIL_TIME",
+                "GREASE_PENCIL_VERTEX_WEIGHT_PROXIMITY",
+                "GREASE_PENCIL_VERTEX_WEIGHT_ANGLE",
                 # Generate
-                'GREASE_PENCIL_ARRAY', 'GREASE_PENCIL_BUILD', 'GREASE_PENCIL_ENVELOPE', 'GREASE_PENCIL_DASH',
-                'GREASE_PENCIL_LENGTH', 'LINEART', 'GREASE_PENCIL_MIRROR', 'GREASE_PENCIL_MULTIPLY',
-                'GREASE_PENCIL_OUTLINE', 'GREASE_PENCIL_SIMPLIFY', 'GREASE_PENCIL_SUBDIV',
+                "GREASE_PENCIL_ARRAY",
+                "GREASE_PENCIL_BUILD",
+                "GREASE_PENCIL_ENVELOPE",
+                "GREASE_PENCIL_DASH",
+                "GREASE_PENCIL_LENGTH",
+                "LINEART",
+                "GREASE_PENCIL_MIRROR",
+                "GREASE_PENCIL_MULTIPLY",
+                "GREASE_PENCIL_OUTLINE",
+                "GREASE_PENCIL_SIMPLIFY",
+                "GREASE_PENCIL_SUBDIV",
                 # Deform
-                'GREASE_PENCIL_ARMATURE', 'GREASE_PENCIL_HOOK', 'GREASE_PENCIL_LATTICE', 'GREASE_PENCIL_NOISE',
-                'GREASE_PENCIL_OFFSET', 'GREASE_PENCIL_SHRINKWRAP', 'GREASE_PENCIL_SMOOTH',
-                'GREASE_PENCIL_THICKNESS',
+                "GREASE_PENCIL_ARMATURE",
+                "GREASE_PENCIL_HOOK",
+                "GREASE_PENCIL_LATTICE",
+                "GREASE_PENCIL_NOISE",
+                "GREASE_PENCIL_OFFSET",
+                "GREASE_PENCIL_SHRINKWRAP",
+                "GREASE_PENCIL_SMOOTH",
+                "GREASE_PENCIL_THICKNESS",
                 # Color
-                'GREASE_PENCIL_COLOR', 'GREASE_PENCIL_OPACITY', 'GREASE_PENCIL_TINT']
+                "GREASE_PENCIL_COLOR",
+                "GREASE_PENCIL_OPACITY",
+                "GREASE_PENCIL_TINT",
+            ]
 
             order_index = {name: idx for idx, name in enumerate(order)}
-            mods = sorted(mods, key=lambda modifier: order_index.get(modifier.name, float('inf')))
+            mods = sorted(
+                mods, key=lambda modifier: order_index.get(modifier.name, float("inf"))
+            )
 
             for m in mods:
-                if m.name in ["GREASE_PENCIL_ARRAY", "GREASE_PENCIL_ARMATURE", "GREASE_PENCIL_COLOR"]:
+                if m.name in [
+                    "GREASE_PENCIL_ARRAY",
+                    "GREASE_PENCIL_ARMATURE",
+                    "GREASE_PENCIL_COLOR",
+                ]:
                     col = row.column()
                 row2 = col.row()
-                row2.prop(m, 'simplify', text="")
+                row2.prop(m, "simplify", text="")
                 # Avoid missing icon error
                 try:
                     row2.label(text=m.disp_name, icon=m.icon)
-                except:
+                except Exception:
                     row2.label(text=m.disp_name, icon="BLANK1")
 
 
@@ -251,7 +311,9 @@ def register():
     bpy.utils.register_class(MustardSimplify_SetModifier)
 
     bpy.utils.register_class(MustardSimplify_SetModifiers)
-    bpy.types.Scene.MustardSimplify_SetModifiers = PointerProperty(type=MustardSimplify_SetModifiers)
+    bpy.types.Scene.MustardSimplify_SetModifiers = PointerProperty(
+        type=MustardSimplify_SetModifiers
+    )
 
     bpy.utils.register_class(MUSTARDSIMPLIFY_OT_MenuModifiersSelect)
 
