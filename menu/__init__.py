@@ -4,9 +4,7 @@ class MainPanel:
     bl_category = "Simplify"
 
 
-from . import menu_simplify
-from . import menu_tools
-from . import menu_camera_hide
+from . import menu_camera_hide, menu_simplify, menu_tools  # noqa: E402
 
 
 def register():

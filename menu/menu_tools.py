@@ -1,7 +1,7 @@
 import bpy
 
-from . import MainPanel
 from .. import __package__ as base_package
+from . import MainPanel
 
 
 class MUSTARDSIMPLIFY_PT_Tools(MainPanel, bpy.types.Panel):
@@ -18,9 +18,12 @@ class MUSTARDSIMPLIFY_PT_Tools(MainPanel, bpy.types.Panel):
         row = box.row()
         row.label(text="General", icon="TOOL_SETTINGS")
         if addon_prefs.wiki:
-            row.operator("mustard_simplify.openlink", text="",
-                         icon="QUESTION").url = "https://github.com/Mustard2/MustardSimplify/wiki#tools"
-        box.operator("mustard_simplify.data_removal", text="Data Removal", icon="BRUSH_DATA")
+            row.operator(
+                "mustard_simplify.openlink", text="", icon="QUESTION"
+            ).url = "https://github.com/Mustard2/MustardSimplify/wiki#tools"
+        box.operator(
+            "mustard_simplify.data_removal", text="Data Removal", icon="BRUSH_DATA"
+        )
 
 
 def register():
