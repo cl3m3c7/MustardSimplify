@@ -1,6 +1,8 @@
-import bpy
 import time
+
+import bpy
 from bpy.app.handlers import persistent
+
 from .. import __package__ as base_package
 
 
@@ -14,7 +16,7 @@ def update_all_execution_time():
     modifiers = scene.MustardSimplify_SetModifiers.modifiers
 
     for modifier in modifiers:
-        modifier.time = 0.
+        modifier.time = 0.0
 
     if depsgraph:
         for obj in context.scene.objects:
@@ -27,12 +29,11 @@ def update_all_execution_time():
 
 @persistent
 def update_animation_execution_time(scene):
-    import time
 
     settings = scene.MustardSimplify_Settings
     addon_prefs = bpy.context.preferences.addons[base_package].preferences
 
-    start = 0.
+    start = 0.0
     if addon_prefs.debug:
         start = time.time()
 
@@ -54,16 +55,21 @@ def update_animation_execution_time(scene):
     modifiers_to_compute = [x.name for x in modifiers if x.execution_time]
 
     for modifier in modifiers:
-        modifier.time = 0.
+        modifier.time = 0.0
 
     if depsgraph:
         for obj in context.scene.objects:
             if obj:
-                obj_modifiers_to_compute = [x for x in obj.modifiers if x.type in modifiers_to_compute]
+                obj_modifiers_to_compute = [
+                    x for x in obj.modifiers if x.type in modifiers_to_compute
+                ]
                 if len(obj_modifiers_to_compute):
                     ob_eval = obj.evaluated_get(depsgraph)
                     for modifier in ob_eval.modifiers:
-                        if modifier.show_viewport and modifier.type in modifiers_to_compute:
+                        if (
+                            modifier.show_viewport
+                            and modifier.type in modifiers_to_compute
+                        ):
                             modifiers[modifier.type].time += modifier.execution_time
 
     settings.execution_times_frames += 1
@@ -76,14 +82,17 @@ def update_animation_execution_time(scene):
 
 class MUSTARDSIMPLIFY_OT_UpdateExecutionTime(bpy.types.Operator):
     """Update the report of execution for every modifier"""
+
     bl_idname = "mustard_simplify.update_execution_time"
     bl_label = "Update Execution time"
 
     def execute(self, context):
         bpy.context.view_layer.update()
         update_all_execution_time()
-        self.report({'INFO'}, 'Mustard Simplify - Modifiers Execution Time has been updated.')
-        return {'FINISHED'}
+        self.report(
+            {"INFO"}, "Mustard Simplify - Modifiers Execution Time has been updated."
+        )
+        return {"FINISHED"}
 
 
 def register():

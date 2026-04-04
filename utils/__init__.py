@@ -1,6 +1,4 @@
-from . import ops_link
-from . import ops_reset
-from . import execution_time
+from . import execution_time, ops_link, ops_reset
 
 
 def register():

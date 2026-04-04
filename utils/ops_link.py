@@ -1,22 +1,21 @@
-import bpy
 import webbrowser
-from bpy.props import *
+
+import bpy
+from bpy.props import StringProperty
 
 
 class MUSTARDSIMPLIFY_OT_LinkButton(bpy.types.Operator):
     """Open links in a web browser"""
+
     bl_idname = "mustard_simplify.openlink"
     bl_label = "Open Link"
-    bl_options = {'REGISTER'}
+    bl_options = {"REGISTER"}
 
-    url: StringProperty(name='URL',
-                        description="URL",
-                        default="http://blender.org/"
-                        )
+    url: StringProperty(name="URL", description="URL", default="http://blender.org/")
 
     def execute(self, context):
         webbrowser.open_new(self.url)
-        return {'FINISHED'}
+        return {"FINISHED"}
 
 
 def register():

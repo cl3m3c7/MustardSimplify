@@ -1,12 +1,12 @@
 import bpy
-from bpy.props import *
 
 
 class MUSTARDSIMPLIFY_OT_ResetSettings(bpy.types.Operator):
     """Reset addon settings"""
+
     bl_idname = "mustard_simplify.reset_settings"
     bl_label = "Reset Settings"
-    bl_options = {'REGISTER'}
+    bl_options = {"REGISTER"}
 
     def execute(self, context):
 
@@ -16,7 +16,7 @@ class MUSTARDSIMPLIFY_OT_ResetSettings(bpy.types.Operator):
 
         modifiers.clear()
         objects.clear()
-        return {'FINISHED'}
+        return {"FINISHED"}
 
 
 def register():
