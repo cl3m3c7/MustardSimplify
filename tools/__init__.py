@@ -1,5 +1,4 @@
-from . import ops_data_removal
-from . import ops_fast_normals
+from . import ops_data_removal, ops_fast_normals
 
 
 def register():

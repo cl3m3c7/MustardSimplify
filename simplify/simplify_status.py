@@ -34,24 +34,28 @@ class MustardSimplify_SceneStatus(bpy.types.PropertyGroup):
 # Classes to manage exceptions
 class MustardSimplify_Exception(bpy.types.PropertyGroup):
     exception: bpy.props.PointerProperty(type=bpy.types.Object)
-    modifiers: bpy.props.BoolProperty(name="Modifiers",
-                                      description="Disable modifiers",
-                                      default=False)
-    shape_keys: bpy.props.BoolProperty(name="Shape Keys",
-                                       description="Mute un-used shape keys (value different from 0)",
-                                       default=False)
-    drivers: bpy.props.BoolProperty(name="Drivers",
-                                    description="Disable Drivers",
-                                    default=False)
-    normals_auto_smooth: bpy.props.BoolProperty(name="Normals Auto Smooth",
-                                                description="Disable Normals Auto Smooth",
-                                                default=False)
-    visibility: bpy.props.BoolProperty(name="Visibility",
-                                       description="Hide the Object",
-                                       default=False)
-    camera_hide: bpy.props.BoolProperty(name="Camera Hide",
-                                       description="Apply the Camera Hide operation",
-                                       default=False)
+    modifiers: bpy.props.BoolProperty(
+        name="Modifiers", description="Disable modifiers", default=False
+    )
+    shape_keys: bpy.props.BoolProperty(
+        name="Shape Keys",
+        description="Mute un-used shape keys (value different from 0)",
+        default=False,
+    )
+    drivers: bpy.props.BoolProperty(
+        name="Drivers", description="Disable Drivers", default=False
+    )
+    normals_auto_smooth: bpy.props.BoolProperty(
+        name="Normals Auto Smooth",
+        description="Disable Normals Auto Smooth",
+        default=False,
+    )
+    visibility: bpy.props.BoolProperty(
+        name="Visibility", description="Hide the Object", default=False
+    )
+    camera_hide: bpy.props.BoolProperty(
+        name="Camera Hide", description="Apply the Camera Hide operation", default=False
+    )
 
 
 class MustardSimplify_Exceptions(bpy.types.PropertyGroup):
@@ -64,15 +68,21 @@ def register():
     bpy.utils.register_class(MustardSimplify_ShapeKeysStatus)
 
     bpy.utils.register_class(MustardSimplify_ObjectStatus)
-    bpy.types.Object.MustardSimplify_Status = bpy.props.PointerProperty(type=MustardSimplify_ObjectStatus)
+    bpy.types.Object.MustardSimplify_Status = bpy.props.PointerProperty(
+        type=MustardSimplify_ObjectStatus
+    )
 
     bpy.utils.register_class(MustardSimplify_SceneStatus)
-    bpy.types.Scene.MustardSimplify_Status = bpy.props.PointerProperty(type=MustardSimplify_SceneStatus)
+    bpy.types.Scene.MustardSimplify_Status = bpy.props.PointerProperty(
+        type=MustardSimplify_SceneStatus
+    )
 
     bpy.utils.register_class(MustardSimplify_Exception)
 
     bpy.utils.register_class(MustardSimplify_Exceptions)
-    bpy.types.Scene.MustardSimplify_Exceptions = bpy.props.PointerProperty(type=MustardSimplify_Exceptions)
+    bpy.types.Scene.MustardSimplify_Exceptions = bpy.props.PointerProperty(
+        type=MustardSimplify_Exceptions
+    )
 
 
 def unregister():

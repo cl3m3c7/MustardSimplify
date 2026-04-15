@@ -3,6 +3,7 @@ import bpy
 
 class MUSTARDSIMPLIFY_OT_MenuBlenderSimplifySettings(bpy.types.Operator):
     """Modify Blender Simplify settings"""
+
     bl_idname = "mustard_simplify.menu_blender_simplify_settings"
     bl_label = "Blender Simplify Settings"
 
@@ -11,7 +12,7 @@ class MUSTARDSIMPLIFY_OT_MenuBlenderSimplifySettings(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=400)
@@ -29,7 +30,9 @@ class MUSTARDSIMPLIFY_OT_MenuBlenderSimplifySettings(bpy.types.Operator):
 
         box.label(text="Viewport", icon="RESTRICT_VIEW_ON")
 
-        flow = box.grid_flow(row_major=True, columns=0, even_columns=False, even_rows=False, align=True)
+        flow = box.grid_flow(
+            row_major=True, columns=0, even_columns=False, even_rows=False, align=True
+        )
 
         col = flow.column()
         col.prop(rd, "simplify_subdivision", text="Max Subdivision")
@@ -45,7 +48,9 @@ class MUSTARDSIMPLIFY_OT_MenuBlenderSimplifySettings(bpy.types.Operator):
 
         box.label(text="Render", icon="RESTRICT_RENDER_ON")
 
-        flow = box.grid_flow(row_major=True, columns=0, even_columns=False, even_rows=False, align=True)
+        flow = box.grid_flow(
+            row_major=True, columns=0, even_columns=False, even_rows=False, align=True
+        )
 
         col = flow.column()
         col.prop(rd, "simplify_subdivision_render", text="Max Subdivision")

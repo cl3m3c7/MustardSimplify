@@ -1,7 +1,7 @@
 import bpy
 
-from . import MainPanel
 from .. import __package__ as base_package
+from . import MainPanel
 
 
 class MUSTARDSIMPLIFY_PT_CameraHide(MainPanel, bpy.types.Panel):
@@ -22,19 +22,25 @@ class MUSTARDSIMPLIFY_PT_CameraHide(MainPanel, bpy.types.Panel):
 
         row = layout.row(align=True)
         row.enabled = not settings.live_frustum_running
-        row.operator("mustard_simplify.apply_frustum_culling", icon='HIDE_OFF')
-        row.operator("mustard_simplify.restore_frustum_culling", icon='LOOP_BACK', text="")
+        row.operator("mustard_simplify.apply_frustum_culling", icon="HIDE_OFF")
+        row.operator(
+            "mustard_simplify.restore_frustum_culling", icon="LOOP_BACK", text=""
+        )
 
         layout.separator()
 
         if settings.live_frustum_running:
-            icon = 'PAUSE'
+            icon = "PAUSE"
             text = "Stop Camera Hide"
         else:
-            icon = 'PLAY'
+            icon = "PLAY"
             text = "Start Camera Hide"
-        layout.operator("mustard_simplify.toggle_live_frustum_culling", icon=icon, text=text,
-                        depress=settings.live_frustum_running)
+        layout.operator(
+            "mustard_simplify.toggle_live_frustum_culling",
+            icon=icon,
+            text=text,
+            depress=settings.live_frustum_running,
+        )
         layout.prop(settings, "live_frustum_interval", slider=True)
 
 

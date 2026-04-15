@@ -1,12 +1,14 @@
-from . import ui_exceptions
-from . import simplify_status
-from . import ops_settings_blender_simplify
-from . import ops_settings_modifiers
-from . import ops_settings_objects
-from . import ops_settings_shape_keys
-from . import ops_simplify
-from . import ops_camera_hide
-from . import ops_viewport_button
+from . import (
+    ops_camera_hide,
+    ops_settings_blender_simplify,
+    ops_settings_modifiers,
+    ops_settings_objects,
+    ops_settings_shape_keys,
+    ops_simplify,
+    ops_viewport_button,
+    simplify_status,
+    ui_exceptions,
+)
 
 
 def register():

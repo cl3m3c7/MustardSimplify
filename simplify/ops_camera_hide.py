@@ -11,7 +11,7 @@ def camera_as_planes(scene, cam_obj):
 
     planes = []
     for i in range(4):
-        p1 = origin if cam.type != 'ORTHO' else frame[i] + matrix.col[2].xyz
+        p1 = origin if cam.type != "ORTHO" else frame[i] + matrix.col[2].xyz
         p2 = frame[i - 1]
         p3 = frame[i]
         normal = geom.normal(p1, p2, p3)
@@ -30,7 +30,7 @@ def is_bbox_in_frustum(obj, planes):
 
 def store_objects_visibility():
     for obj in bpy.context.scene.objects:
-        if obj.type == 'MESH':
+        if obj.type == "MESH":
             obj["was_hidden_before_culling"] = obj.hide_viewport
 
 
@@ -49,23 +49,34 @@ def apply_frustum_culling():
     if cam_obj is None:
         return
     planes = camera_as_planes(scene, cam_obj)
-    for obj in [x for x in scene.objects if x and x.type == 'MESH']:
+    for obj in [x for x in scene.objects if x and x.type == "MESH"]:
         exception_collection = settings.exception_collection
         exception = find_exception_obj(scene.MustardSimplify_Exceptions.exceptions, obj)
         if (exception is not None and not exception.camera_hide) or (
-                exception_collection is not None and obj in [x for x in (
-                settings.exception_collection.all_objects if settings.exception_include_subcollections else settings.exception_collection.objects)]):
+            exception_collection is not None
+            and obj
+            in [
+                x
+                for x in (
+                    settings.exception_collection.all_objects
+                    if settings.exception_include_subcollections
+                    else settings.exception_collection.objects
+                )
+            ]
+        ):
             continue
         was_hidden_before = obj.get("was_hidden_before_culling", False)
         if was_hidden_before and not obj.hide_viewport:
             obj.hide_viewport = True
-        elif not was_hidden_before and not obj.hide_viewport == (not is_bbox_in_frustum(obj, planes)):
+        elif not was_hidden_before and not obj.hide_viewport == (
+            not is_bbox_in_frustum(obj, planes)
+        ):
             obj.hide_viewport = not is_bbox_in_frustum(obj, planes)
 
 
 def restore_objects_visibility():
     for obj in bpy.context.scene.objects:
-        if obj.type == 'MESH':
+        if obj.type == "MESH":
             was_hidden = obj.get("was_hidden_before_culling")
             if was_hidden is not None:
                 obj.hide_viewport = was_hidden
@@ -75,7 +86,7 @@ def restore_objects_visibility():
 class MUSTARDSIMPLIFY_OT_CameraHideModel(bpy.types.Operator):
     bl_idname = "mustard_simplify.live_frustum_culling"
     bl_label = "Live Frustum Culling Modal Operator"
-    bl_options = {'INTERNAL'}
+    bl_options = {"INTERNAL"}
 
     _timer = None
 
@@ -89,13 +100,13 @@ class MUSTARDSIMPLIFY_OT_CameraHideModel(bpy.types.Operator):
             if self._timer:
                 wm.event_timer_remove(self._timer)
                 self._timer = None
-            return {'CANCELLED'}
+            return {"CANCELLED"}
 
-        if event.type == 'TIMER':
+        if event.type == "TIMER":
             apply_frustum_culling()
-            return {'PASS_THROUGH'}
+            return {"PASS_THROUGH"}
 
-        return {'PASS_THROUGH'}
+        return {"PASS_THROUGH"}
 
     def execute(self, context):
         scene = context.scene
@@ -105,14 +116,14 @@ class MUSTARDSIMPLIFY_OT_CameraHideModel(bpy.types.Operator):
         interval = settings.live_frustum_interval
         self._timer = wm.event_timer_add(interval, window=context.window)
         wm.modal_handler_add(self)
-        return {'RUNNING_MODAL'}
+        return {"RUNNING_MODAL"}
 
 
 class MUSTARDSIMPLIFY_OT_CameraHide(bpy.types.Operator):
     bl_idname = "mustard_simplify.toggle_live_frustum_culling"
     bl_label = "Toggle Live Camera Hide"
     bl_description = "Toggle live Camera Hide on/off"
-    bl_options = {'REGISTER'}
+    bl_options = {"REGISTER"}
 
     def execute(self, context):
         scene = context.scene
@@ -120,51 +131,51 @@ class MUSTARDSIMPLIFY_OT_CameraHide(bpy.types.Operator):
 
         if not settings.live_frustum_running:
             store_objects_visibility()
-            bpy.ops.mustard_simplify.live_frustum_culling('INVOKE_DEFAULT')
+            bpy.ops.mustard_simplify.live_frustum_culling("INVOKE_DEFAULT")
             settings.live_frustum_running = True
         else:
             settings.live_frustum_should_stop = True
             restore_objects_visibility()
             settings.live_frustum_running = False
 
-        return {'FINISHED'}
+        return {"FINISHED"}
 
 
 class MUSTARDSIMPLIFY_OT_ApplyCameraHide(bpy.types.Operator):
     bl_idname = "mustard_simplify.apply_frustum_culling"
     bl_label = "Apply Camera Hide"
     bl_description = "Hide mesh objects outside the active camera frustum"
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         scene = context.scene
         settings = scene.MustardSimplify_Settings
 
-        if not settings.live_frustrum_single_applied:
+        if not settings.live_frustum_single_applied:
             store_objects_visibility()
-            settings.live_frustrum_single_applied = True
+            settings.live_frustum_single_applied = True
 
         apply_frustum_culling()
 
-        self.report({'INFO'}, "Mustard Simplify - Camera Hide applied")
-        return {'FINISHED'}
+        self.report({"INFO"}, "Mustard Simplify - Camera Hide applied")
+        return {"FINISHED"}
 
 
 class MUSTARDSIMPLIFY_OT_RestoreCameraHide(bpy.types.Operator):
     bl_idname = "mustard_simplify.restore_frustum_culling"
     bl_label = "Restore Camera Hide"
     bl_description = "Restore Camera Hide"
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         scene = context.scene
         settings = scene.MustardSimplify_Settings
 
         restore_objects_visibility()
-        settings.live_frustrum_single_applied = False
+        settings.live_frustum_single_applied = False
 
-        self.report({'INFO'}, "Mustard Simplify - Camera Hide restored")
-        return {'FINISHED'}
+        self.report({"INFO"}, "Mustard Simplify - Camera Hide restored")
+        return {"FINISHED"}
 
 
 def register():

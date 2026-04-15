@@ -14,11 +14,7 @@ bl_info = {
 }
 
 
-from . import settings
-from . import simplify
-from . import tools
-from . import utils
-from . import menu
+from . import menu, settings, simplify, tools, utils  # noqa: E402
 
 
 def register():

@@ -1,5 +1,12 @@
 import bpy
-from bpy.props import *
+from bpy.props import (
+    BoolProperty,
+    CollectionProperty,
+    IntProperty,
+    PointerProperty,
+    StringProperty,
+)
+
 from .. import __package__ as base_package
 
 
@@ -15,9 +22,10 @@ class MustardSimplify_DataRemoval(bpy.types.PropertyGroup):
 
 class MUSTARDSIMPLIFY_OT_DataRemoval_SelectAll(bpy.types.Operator):
     """Select/deselect all data blocks"""
+
     bl_idname = "mustard_simplify.data_removal_select"
     bl_label = "Select/Deselect All"
-    bl_options = {'UNDO'}
+    bl_options = {"UNDO"}
 
     select: BoolProperty()
 
@@ -33,14 +41,15 @@ class MUSTARDSIMPLIFY_OT_DataRemoval_SelectAll(bpy.types.Operator):
         for e in entries:
             e.remove = self.select
 
-        return {'FINISHED'}
+        return {"FINISHED"}
 
 
 class MUSTARDSIMPLIFY_OT_DataRemoval(bpy.types.Operator):
-    """Remove data from objects.\nThis is a highly destructive operation, only remove data that you know are not needed!"""
+    """Remove data from objects.\nThis is a highly destructive operation, only remove data that you know are not needed!"""  # noqa: E501
+
     bl_idname = "mustard_simplify.data_removal"
     bl_label = "Remove Data"
-    bl_options = {'UNDO'}
+    bl_options = {"UNDO"}
 
     search: StringProperty(default="", name="")
 
@@ -54,7 +63,7 @@ class MUSTARDSIMPLIFY_OT_DataRemoval(bpy.types.Operator):
             try:
                 del o[attr]
                 return 1
-            except:
+            except Exception:
                 return 0
 
         scene = context.scene
@@ -62,8 +71,10 @@ class MUSTARDSIMPLIFY_OT_DataRemoval(bpy.types.Operator):
         addon_prefs = bpy.context.preferences.addons[base_package].preferences
 
         if not len([x for x in entries if x.remove]):
-            self.report({'WARNING'}, "Mustard Simplify - No Data Block to remove was selected.")
-            return {'FINISHED'}
+            self.report(
+                {"WARNING"}, "Mustard Simplify - No Data Block to remove was selected."
+            )
+            return {"FINISHED"}
 
         # Remove data
         data_deleted = 0
@@ -93,11 +104,15 @@ class MUSTARDSIMPLIFY_OT_DataRemoval(bpy.types.Operator):
         entries.clear()
 
         if data_deleted > 0:
-            self.report({'INFO'}, "Mustard Simplify - Data Blocks removed: " + str(data_deleted))
+            self.report(
+                {"INFO"}, "Mustard Simplify - Data Blocks removed: " + str(data_deleted)
+            )
         else:
-            self.report({'WARNING'}, "Mustard Simplify - No Data Block to remove was found.")
+            self.report(
+                {"WARNING"}, "Mustard Simplify - No Data Block to remove was found."
+            )
 
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def invoke(self, context, event):
 
@@ -131,7 +146,9 @@ class MUSTARDSIMPLIFY_OT_DataRemoval(bpy.types.Operator):
 
         self.search = ""
 
-        return context.window_manager.invoke_props_dialog(self, width=1024 if addon_prefs.debug else 900)
+        return context.window_manager.invoke_props_dialog(
+            self, width=1024 if addon_prefs.debug else 900
+        )
 
     def draw(self, context):
 
@@ -145,14 +162,22 @@ class MUSTARDSIMPLIFY_OT_DataRemoval(bpy.types.Operator):
             box.label(text="No Data Blocks found", icon="ERROR")
             return
 
-        box.label(text="This operation is highly destructive! Remove only data-blocks you do not need!", icon="ERROR")
+        box.label(
+            text="This operation is highly destructive! Remove only data-blocks you "
+            "do not need!",
+            icon="ERROR",
+        )
 
-        ordered_entries = [x for x in sorted([x for x in entries], key=lambda x: x.count, reverse=True) if self.search in x.name]
+        ordered_entries = [
+            x
+            for x in sorted([x for x in entries], key=lambda x: x.count, reverse=True)
+            if self.search in x.name
+        ]
         length_entries = len(ordered_entries)
 
         cols = [0, 0, 0]
         for i in range(len(cols)):
-            cols[i] = int(length_entries/len(cols)) + (cols[i-1] if i > 0 else 0)
+            cols[i] = int(length_entries / len(cols)) + (cols[i - 1] if i > 0 else 0)
         remainder = (length_entries % cols[2]) if cols[2] > 0 else 1
         cols[0] += remainder
         cols[1] += remainder
@@ -160,26 +185,32 @@ class MUSTARDSIMPLIFY_OT_DataRemoval(bpy.types.Operator):
 
         box = layout.box()
         row = box.row(align=True)
-        row.operator("mustard_simplify.data_removal_select", text="Select All").select = True
-        row.operator("mustard_simplify.data_removal_select", text="Deselect All").select = False
+        row.operator(
+            "mustard_simplify.data_removal_select", text="Select All"
+        ).select = True
+        row.operator(
+            "mustard_simplify.data_removal_select", text="Deselect All"
+        ).select = False
 
         row = box.row(align=True)
-        row.prop(self, 'search', icon="VIEWZOOM")
+        row.prop(self, "search", icon="VIEWZOOM")
 
         row = box.row()
         for i in range(len(cols)):
             col = row.column()
-            begin = cols[i-1] if i > 0 else 0
+            begin = cols[i - 1] if i > 0 else 0
             end = cols[i]
             for e in ordered_entries[begin:end]:
-                col.prop(e, 'remove', text=e.name + " (" + str(e.count) + ")")
+                col.prop(e, "remove", text=e.name + " (" + str(e.count) + ")")
 
 
 def register():
     bpy.utils.register_class(MustardSimplify_DataRemoval_Entry)
     bpy.utils.register_class(MustardSimplify_DataRemoval)
     bpy.utils.register_class(MUSTARDSIMPLIFY_OT_DataRemoval_SelectAll)
-    bpy.types.Scene.MustardSimplify_DataRemoval = PointerProperty(type=MustardSimplify_DataRemoval)
+    bpy.types.Scene.MustardSimplify_DataRemoval = PointerProperty(
+        type=MustardSimplify_DataRemoval
+    )
     bpy.utils.register_class(MUSTARDSIMPLIFY_OT_DataRemoval)
 
 
